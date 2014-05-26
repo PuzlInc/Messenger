@@ -148,28 +148,57 @@ public class Messenger {
      * @param sender CommandSender to send message to.
      */
     public void send(String key, CommandSender sender) {
-        Object value = config.get(key);
-        if (value instanceof String) {
-            String string  = (String) value;
-            sender.sendMessage(prefix != null ? prefix + format(string) : format(string));
-        } else {
-            sender.sendMessage(format(arrayToString(value)).split(SPLIT_TOKEN));
-        }
+        send(get(key), sender);
     }
 
     /**
      * Send a message to a given CommandSender with formatting.
      * @param key The key that the message is stored as.
      * @param sender CommandSender to send message to.
-     * @param format The format to use with {@link java.lang.String#format(String, Object...)}.
+     * @param format The format arguments to use with {@link java.lang.String#format(String, Object...)}.
      */
     public void send(String key, CommandSender sender, Object... format) {
+        send(get(key, format), sender);
+    }
+
+    private void send(Object message, CommandSender sender) {
+        if (message instanceof String) {
+            String string  = (String) message;
+            sender.sendMessage(prefix(string));
+        } else {
+            String[] list = (String[]) message;
+            sender.sendMessage(prefix(list));
+        }
+    }
+
+    /**
+     * Send a message to a given CommandSender.
+     * Messages returned will only have color codes formatted.
+     * @param key The key that the message is stored as.
+     */
+    public Object get(String key) {
         Object value = config.get(key);
         if (value instanceof String) {
             String string  = (String) value;
-            sender.sendMessage(prefix != null ? prefix + format(string) : format(string));
+            return formatColorCodes(string);
         } else {
-            sender.sendMessage(format(arrayToString(value), format).split(SPLIT_TOKEN));
+            return formatColorCodes(arrayToString(value)).split(SPLIT_TOKEN);
+        }
+    }
+
+    /**
+     * Get a message with formatting.
+     * Messages returned will have color codes formatted as well as any provided arguments formatted.
+     * @param key The key that the message is stored as.
+     * @param format The format arguments to use with {@link java.lang.String#format(String, Object...)}.
+     */
+    public Object get(String key, Object... format) {
+        Object value = config.get(key);
+        if (value instanceof String) {
+            String string  = (String) value;
+            return format(string, format);
+        } else {
+            return format(arrayToString(value), format).split(SPLIT_TOKEN);
         }
     }
 
@@ -203,10 +232,10 @@ public class Messenger {
     }
 
     private String format(String string, Object... format) {
-        return format(String.format(string, format));
+        return formatColorCodes(String.format(string, format));
     }
 
-    private String format(String string) {
+    private String formatColorCodes(String string) {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
@@ -217,12 +246,26 @@ public class Messenger {
     private String arrayToString(List<String> list) {
         StringBuilder builder = new StringBuilder();
         for (String string : list) {
-            if (prefix != null) {
-                builder.append(prefix);
-            }
             builder.append(string);
             builder.append(SPLIT_TOKEN);
         }
         return builder.toString();
+    }
+
+    private String prefix(String string) {
+        if (prefix == null) {
+            return string;
+        }
+        return prefix + prefix;
+    }
+
+    private String[] prefix(String[] list) {
+        if (prefix == null) {
+            return list;
+        }
+        for (int i=0;i<list.length;i++) {
+            list[i] = prefix + list[i];
+        }
+        return list;
     }
 }
