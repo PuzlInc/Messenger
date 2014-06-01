@@ -172,6 +172,48 @@ public class Messenger {
     }
 
     /**
+     * Send a raw message to a given CommandSender. This will default to sending the 
+     * message normally if the CommandSender is not a Conversable.
+     * @param key The key that the message is stored as.
+     * @param sender CommandSender to send message to.
+     */
+    public void sendRaw(String key, CommandSender sender) {
+        sendRaw(get(key), sender);
+    }
+
+    /**
+     * Send a raw message to a given CommandSender with formatting. This will default
+     * to sending the message normally if the CommandSender is not a Conversable.
+     * @param key The key that the message is stored as.
+     * @param sender CommandSender to send message to.
+     * @param format The format arguments to use with {@link java.lang.String#format(String, Object...)}.
+     */
+    public void sendRaw(String key, CommandSender sender, Object... format) {
+        sendRaw(get(key, format), sender);
+    }
+
+    private void sendRaw(Object message, CommandSender sender) {
+        List<String> outgoing = new ArrayList<String>();
+        if (message instanceof String) {
+            String string  = (String) message;
+            outgoing.add(string);
+        } else {
+            String[] list = (String[]) message;
+            for (String s : list) {
+                outgoing.add(s);
+            }
+        }
+        
+        for(String m : outgoing){
+            if (sender instanceof Conversable) {
+                ((Conversable) sender).sendRawMessage(m);
+            } else {
+                sender.sendMessage(m);
+            }
+        }
+    }
+
+    /**
      * Send a message to a given CommandSender.
      * Messages returned will only have color codes formatted.
      * @param key The key that the message is stored as.
