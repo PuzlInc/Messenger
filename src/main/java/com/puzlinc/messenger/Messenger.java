@@ -21,6 +21,7 @@ package com.puzlinc.messenger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.conversations.Conversable;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -172,43 +173,32 @@ public class Messenger {
     }
 
     /**
-     * Send a raw message to a given CommandSender. This will default to sending the 
-     * message normally if the CommandSender is not a Conversable.
+     * Send a raw message to a given Conversable.
      * @param key The key that the message is stored as.
-     * @param sender CommandSender to send message to.
+     * @param conversable Conversable to send message to.
      */
-    public void sendRaw(String key, CommandSender sender) {
-        sendRaw(get(key), sender);
+    public void sendRaw(String key, Conversable conversable) {
+        sendRaw(get(key), conversable);
     }
 
     /**
-     * Send a raw message to a given CommandSender with formatting. This will default
-     * to sending the message normally if the CommandSender is not a Conversable.
+     * Send a raw message to a given Conversable with formatting.
      * @param key The key that the message is stored as.
-     * @param sender CommandSender to send message to.
+     * @param conversable Conversable to send message to.
      * @param format The format arguments to use with {@link java.lang.String#format(String, Object...)}.
      */
-    public void sendRaw(String key, CommandSender sender, Object... format) {
-        sendRaw(get(key, format), sender);
+    public void sendRaw(String key, Conversable conversable, Object... format) {
+        sendRaw(get(key, format), conversable);
     }
 
-    private void sendRaw(Object message, CommandSender sender) {
-        List<String> outgoing = new ArrayList<String>();
+    private void sendRaw(Object message, Conversable conversable) {
         if (message instanceof String) {
             String string  = (String) message;
-            outgoing.add(string);
+            conversable.sendRawMessage(string);
         } else {
             String[] list = (String[]) message;
             for (String s : list) {
-                outgoing.add(s);
-            }
-        }
-        
-        for(String m : outgoing){
-            if (sender instanceof Conversable) {
-                ((Conversable) sender).sendRawMessage(m);
-            } else {
-                sender.sendMessage(m);
+                conversable.sendRawMessage(s);
             }
         }
     }
