@@ -204,12 +204,12 @@ public class Messenger {
     }
 
     /**
-     * Send a message to a given CommandSender.
+     * Get a message without formatting.
      * Messages returned will only have color codes formatted.
      * @param key The key that the message is stored as.
      */
     public Object get(String key) {
-        Object value = config.get(key);
+        Object value = getValue(key);
         if (value instanceof String) {
             String string  = (String) value;
             return formatColorCodes(string);
@@ -225,7 +225,7 @@ public class Messenger {
      * @param format The format arguments to use with {@link java.lang.String#format(String, Object...)}.
      */
     public Object get(String key, Object... format) {
-        Object value = config.get(key);
+        Object value = getValue(key);
         if (value instanceof String) {
             String string  = (String) value;
             return format(string, format);
@@ -233,6 +233,22 @@ public class Messenger {
             return format(arrayToString(value), format).split(SPLIT_TOKEN);
         }
     }
+
+    private Object getValue(String key) {
+        if (config.get(key) != null) {
+            return config.get(key);
+        } else {
+            for (String s : defaults.keySet()) {
+                if (s.equals(key)) {
+                    config.set(key, defaults.get(key));
+                    save();
+                    return defaults.get(key);
+                }
+            }
+        }
+        return null;
+    }
+
 
     private void save() {
         try {
