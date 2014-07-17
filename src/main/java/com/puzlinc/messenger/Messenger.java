@@ -249,7 +249,6 @@ public class Messenger {
         return null;
     }
 
-
     private void save() {
         try {
             config.save(configFile);
@@ -304,7 +303,7 @@ public class Messenger {
         if (prefix == null) {
             return string;
         }
-        return prefix + prefix;
+        return prefix + string;
     }
 
     private String[] prefix(String[] list) {
