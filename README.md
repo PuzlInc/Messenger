@@ -24,7 +24,7 @@ By default messenger will create a file in ```plugins/PluginName/messages.yml```
 messenger.setFileName("strings.yml");
 ```
 
-Before using messenger to send any values, you must call ```messaging.load();```. Do this ***after*** you have set any defaults and other options you wish to be present.
+Before using messenger to send any values, you must call ```messenger.load();```. Do this ***after*** you have set any defaults and other options you wish to be present.
 
 
 Defaults
@@ -63,7 +63,7 @@ usage:
 Sending
 -------
 
-Before messages are sent, you must call ```messaging.load();```
+Before messages are sent, you must call ```messenger.load();```
 
 Using String constants then allows easy sending of these messages to any CommandSender:
 
